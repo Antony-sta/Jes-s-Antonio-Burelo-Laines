@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euler Method</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Método de Euler Act#5</h1>
+    <h2>Gráfica de y_aproximado vs y_exacto   y=4x-2y,   y(0)=2 y(0.5)  h(0.005)</h2>
+    <canvas id="myChart" width="400" height="200"></canvas>
+    <h2>Tabla de Valores</h2>
+    <div id="table-container"></div>
+
+    <script>
+        function euler(f, y0, x0, h, n) {
+            const y = [y0];
+            const x = [x0];
+
+            for (let i = 1; i <= n; i++) {
+                const xn = x[i - 1] + h;
+                const yn = y[i - 1] + h * f(x[i - 1], y[i - 1]);
+                x.push(xn);
+                y.push(yn);
+            }
+
+            return { x, y };
+        }
+
+        function f(x, y) {
+            return 4 * x - 2 * y;
+        }
+
+        function exactSolution(x) {
+            return 2 * Math.exp(-2 * x) + 2 * x - 1;
+        }
+
+        const y0 = 2;
+        const x0 = 0;
+        const h = 0.005;
+        const n = Math.floor(0.5 / h);
+
+        const result = euler(f, y0, x0, h, n);
+
+        const data = result.x.map((x, index) => ({
+            x,
+            y_aproximado: result.y[index],
+            y_exacto: exactSolution(x),
+            error_verdadero: Math.abs(result.y[index] - exactSolution(x)),
+            error_relativo: Math.abs((result.y[index] - exactSolution(x)) / exactSolution(x))
+        }));
+
+        // Crear la tabla de valores
+        const tableContainer = document.getElementById('table-container');
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+
+        const headerRow = document.createElement('tr');
+        const headers = ['x', 'y_aproximado', 'y_exacto', 'Error Verdadero', 'Error Relativo'];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            Object.values(row).forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = typeof value === 'number' ? value.toFixed(6) : value;
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableContainer.appendChild(table);
+
+        // Crear el gráfico
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.x.toFixed(3)),
+                datasets: [
+                    {
+                        label: 'y_aproximado',
+                        data: data.map(d => d.y_aproximado),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'y_exacto',
+                        data: data.map(d => d.y_exacto),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

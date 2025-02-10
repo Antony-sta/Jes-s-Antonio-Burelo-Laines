@@ -1,38 +1,40 @@
-function eulerMethod(g, c, m, v0, tmax, h, exactValues) {
-  let t = 0;
-  let v = v0;
+function eulerMethod(f, x0, y0, h, n) {
   let results = [];
-  let i = 1;
+  let x = x0;
+  let y = y0;
 
-  while (t <= tmax && i <= exactValues.length) {
-    // Calcular la velocidad aproximada utilizando Euler
-    let vApprox = v + h * (g - (c/m) * v);
+  for (let i = 0; i <= n; i++) {
+    // Calcular el valor exacto
+    let yExact = Math.exp(x * x - 1);
 
-    // Calcular el error porcentual
-    let vExact = exactValues[i - 1];
-    let error = ((vApprox - vExact) / vExact) * 100;
+    // Calcular el error absoluto y relativo porcentual
+    let errorAbs = Math.abs(yExact - y);
+    let errorRel = (errorAbs / yExact) * 100;
 
     // Almacenar los resultados
-    results.push({ t, vApprox, vExact, error });
+    results.push({ i, x: x.toFixed(1), yApprox: y.toFixed(4), yExact: yExact.toFixed(4), errorAbs: errorAbs.toFixed(4), errorRel: errorRel.toFixed(2) });
 
-    // Imprimir los resultados (ajusta el formato según tus necesidades)
-    console.log(i + ". t = " + t.toFixed(2) + " s, v_approx = " + vApprox.toFixed(4) + " m/s, v_exact = " + vExact.toFixed(4) + " m/s, error = " + error.toFixed(2) + "%");
+    // Imprimir los resultados
+    console.log(`${i}. x = ${x.toFixed(1)}, y_approx = ${y.toFixed(4)}, y_exact = ${yExact.toFixed(4)}, error_abs = ${errorAbs.toFixed(4)}, error_rel = ${errorRel.toFixed(2)}%`);
 
-    // Actualizar el tiempo y el índice
-    t += h;
-    i++;
+    // Actualizar x e y usando el método de Euler
+    y = y + h * f(x, y);
+    x = x + h;
   }
 
   return results;
 }
 
-// Ejemplo de uso (ajusta los valores según tu problema)
-const g = 9.81; // m/s^2
-const c = 0.2; // kg/s
-const m = 1; // kg
-const v0 = 0; // m/s
-const tmax = 1; // s
-const h = 0.1; // s
-const exactValues = [0, 17.89, 30.85, 51.37, 69.56, 78.4]; // Lista de velocidades exactas
+// Definición de la función diferencial y' = 2xy
+function f(x, y) {
+  return 2 * x * y;
+}
 
-const results = eulerMethod(g, c, m, v0, tmax, h, exactValues);
+// Valores iniciales
+const x0 = 1;
+const y0 = 1;
+const h = 0.1; // Paso
+const n = 5;   // Número de pasos
+
+// Ejecutar el método de Euler
+eulerMethod(f, x0, y0, h, n);
