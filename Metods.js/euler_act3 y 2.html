@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euler Method - Velocity</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            width: 80% !important;
+            height: 400px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Método de Euler Act#3</h1>
+    <h2>Gráfica de v_aproximado vs v_exacto v(t)=78.4(1−e 
+        ^−0.125t
+         )</h2>
+    <canvas id="myChart"></canvas>
+    <h2>Tabla de Valores</h2>
+    <div id="table-container" style="display: flex; justify-content: center;"></div>
+
+    <script>
+        function euler(f, v0, t0, h, n) {
+            const v = [v0];
+            const t = [t0];
+
+            for (let i = 1; i <= n; i++) {
+                const tn = t[i - 1] + h;
+                const vn = v[i - 1] + h * f(t[i - 1], v[i - 1]);
+                t.push(tn);
+                v.push(vn);
+            }
+
+            return { t, v };
+        }
+
+        function f(t, v) {
+            return 9.8 - 0.125 * v;
+        }
+
+        function exactSolution(t) {
+            return 78.4 * (1 - Math.exp(-0.125 * t));
+        }
+
+        const v0 = 0;
+        const t0 = 0;
+        const h = 0.5;
+        const n = 20;
+
+        const result = euler(f, v0, t0, h, n);
+
+        const data = result.t.map((t, index) => ({
+            t,
+            v_aproximado: result.v[index],
+            v_exacto: exactSolution(t),
+            error_verdadero: Math.abs(result.v[index] - exactSolution(t)),
+            error_relativo: Math.abs((result.v[index] - exactSolution(t)) / exactSolution(t)) * 100
+        }));
+
+        // Crear la tabla de valores
+        const tableContainer = document.getElementById('table-container');
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+
+        // Crear la cabecera de la tabla
+        const headerRow = document.createElement('tr');
+        const headers = ['t (s)', 'v_aproximado (m/s)', 'v_exacto (m/s)', 'Error Verdadero', 'Error Relativo (%)'];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Llenar la tabla con los datos
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            Object.values(row).forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = typeof value === 'number' ? value.toFixed(4) : value;
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        tableContainer.appendChild(table);
+
+        // Crear el gráfico
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.t.toFixed(1)),
+                datasets: [
+                    {
+                        label: 'v_aproximado',
+                        data: data.map(d => d.v_aproximado),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'v_exacto',
+                        data: data.map(d => d.v_exacto),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Método de Euler</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .chart-container {
+      width: 80%;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Resultados del Método de Euler</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>i</th>
+        <th>x<sub>i</sub></th>
+        <th>y<sub>aprox</sub></th>
+        <th>y<sub>exacto</sub></th>
+        <th>Error Abs</th>
+        <th>Error Rel (%)</th>
+      </tr>
+    </thead>
+    <tbody id="resultsTable">
+      <!-- Los resultados se insertarán aquí -->
+    </tbody>
+  </table>
+
+  <div class="chart-container">
+    <canvas id="eulerChart"></canvas>
+  </div>
+
+  <script>
+    function eulerMethod(f, x0, y0, h, n) {
+      let results = [];
+      let x = x0;
+      let y = y0;
+
+      for (let i = 0; i <= n; i++) {
+        let yExact = Math.exp(x * x - 1);
+        let errorAbs = Math.abs(yExact - y);
+        let errorRel = (errorAbs / yExact) * 100;
+
+        results.push({ i, x: x.toFixed(1), yApprox: y.toFixed(4), yExact: yExact.toFixed(4), errorAbs: errorAbs.toFixed(4), errorRel: errorRel.toFixed(2) });
+
+        y = y + h * f(x, y);
+        x = x + h;
+      }
+
+      return results;
+    }
+
+    function f(x, y) {
+      return 2 * x * y;
+    }
+
+    const x0 = 1;
+    const y0 = 1;
+    const h = 0.1;
+    const n = 5;
+
+    const results = eulerMethod(f, x0, y0, h, n);
+    const tableBody = document.getElementById("resultsTable");
+
+    const xValues = [];
+    const yApproxValues = [];
+    const yExactValues = [];
+
+    results.forEach(result => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${result.i}</td>
+        <td>${result.x}</td>
+        <td>${result.yApprox}</td>
+        <td>${result.yExact}</td>
+        <td>${result.errorAbs}</td>
+        <td>${result.errorRel}</td>
+      `;
+      tableBody.appendChild(row);
+
+      xValues.push(result.x);
+      yApproxValues.push(result.yApprox);
+      yExactValues.push(result.yExact);
+    });
+
+    const ctx = document.getElementById('eulerChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: xValues,
+        datasets: [
+          {
+            label: 'y Aproximado',
+            data: yApproxValues,
+            borderColor: 'blue',
+            fill: false
+          },
+          {
+            label: 'y Exacto',
+            data: yExactValues,
+            borderColor: 'red',
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Comparación de y Aproximado y y Exacto'
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
