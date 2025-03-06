@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfica y Método de Newton-Raphson</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chart-container {
+            width: 80%;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+        table {
+            width: 80%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gráfica de \( f(x) = -1 + 5.5x - 4x^2 + 0.5x^3 \)</h1>
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <h2>Método de Newton-Raphson</h2>
+        <label for="initialGuess">Valor inicial (\( x_0 \)):</label>
+        <input type="number" id="initialGuess" step="0.1" value="0.5">
+        <button onclick="runNewtonRaphson()">Calcular raíz</button>
+
+        <h3>Tabla de Iteraciones</h3>
+        <table id="iterationTable">
+            <thead>
+                <tr>
+                    <th>Iteración \( i \)</th>
+                    <th>\( x_i \)</th>
+                    <th>\( f(x_i) \)</th>
+                    <th>\( f'(x_i) \)</th>
+                    <th>\( x_{i+1} \)</th>
+                    <th>\( E_a\% \)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Las filas se generan dinámicamente con JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Función f(x)
+        function f(x) {
+            return -1 + 5.5 * x - 4 * Math.pow(x, 2) + 0.5 * Math.pow(x, 3);
+        }
+
+        // Derivada f'(x)
+        function df(x) {
+            return 5.5 - 8 * x + 1.5 * Math.pow(x, 2);
+        }
+
+        // Método de Newton-Raphson
+        function newtonRaphson(x0, tolerance = 0.0001, maxIterations = 100) {
+            let iterations = [];
+            let x = x0;
+            for (let i = 0; i < maxIterations; i++) {
+                let fx = f(x);
+                let dfx = df(x);
+                let xNext = x - fx / dfx;
+                let error = Math.abs((xNext - x) / xNext) * 100;
+
+                iterations.push({
+                    iteration: i,
+                    x: x,
+                    fx: fx,
+                    dfx: dfx,
+                    xNext: xNext,
+                    error: error
+                });
+
+                if (error < tolerance) break;
+                x = xNext;
+            }
+            return iterations;
+        }
+
+        // Función para ejecutar el método y mostrar resultados
+        function runNewtonRaphson() {
+            const x0 = parseFloat(document.getElementById('initialGuess').value);
+            const iterations = newtonRaphson(x0);
+
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ''; // Limpiar tabla anterior
+
+            iterations.forEach(iter => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${iter.iteration}</td>
+                    <td>${iter.x.toFixed(4)}</td>
+                    <td>${iter.fx.toFixed(4)}</td>
+                    <td>${iter.dfx.toFixed(4)}</td>
+                    <td>${iter.xNext.toFixed(4)}</td>
+                    <td>${iter.error.toFixed(4)}%</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Gráfica de la función
+        const xValues = [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7];
+        const yValues = xValues.map(x => f(x));
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: xValues,
+                datasets: [{
+                    label: 'f(x) = -1 + 5.5x - 4x² + 0.5x³',
+                    data: yValues,
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'x'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'f(x)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

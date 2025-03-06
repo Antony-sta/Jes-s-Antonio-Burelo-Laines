@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfica Método de Euler</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <h2>Comparación Método de Euler vs Solución Exacta</h2>
+    <canvas id="comparisonChart"></canvas>
+
+    <h2>Error Absoluto y Relativo</h2>
+    <canvas id="errorChart"></canvas>
+
+    <script>
+        const x = [0.00, 0.10, 0.20, 0.30, 0.40, 0.50];
+        const yEuler = [1.0000, 0.8000, 0.6408, 0.5151, 0.4166, 0.3399];
+        const yExacto = [1.0000, 0.9802, 0.9231, 0.8316, 0.7105, 0.5677];
+        const errorAbs = [0.0000, 0.1802, 0.2823, 0.3165, 0.2939, 0.2278];
+        const errorRel = [0.00, 18.38, 30.59, 38.06, 41.37, 40.14];
+
+        // Gráfico de comparación
+        const ctx1 = document.getElementById('comparisonChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: x,
+                datasets: [
+                    {
+                        label: 'Euler',
+                        data: yEuler,
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Exacto',
+                        data: yExacto,
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'x' } },
+                    y: { title: { display: true, text: 'y' } }
+                }
+            }
+        });
+
+        // Gráfico de errores
+        const ctx2 = document.getElementById('errorChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: x,
+                datasets: [
+                    {
+                        label: 'Error Absoluto',
+                        data: errorAbs,
+                        backgroundColor: 'green',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Error Relativo (%)',
+                        data: errorRel,
+                        borderColor: 'orange',
+                        type: 'line',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'x' } },
+                    y: { title: { display: true, text: 'Error' } }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

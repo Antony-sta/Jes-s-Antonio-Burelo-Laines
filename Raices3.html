@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfica de la función</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Gráfica de la función f(x) = -0.5x² + 2.5x + 4.5</h2>
+    <canvas id="grafica"></canvas>
+    <h3>Tabulación</h3>
+    <table border="1">
+        <tr>
+            <th>x</th>
+            <th>f(x)</th>
+        </tr>
+        <tbody id="tabla-valores"></tbody>
+    </table>
+
+    <script>
+        function f(x) {
+            return -0.5 * x * x + 2.5 * x + 4.5;
+        }
+
+        const ctx = document.getElementById('grafica').getContext('2d');
+        const valoresX = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+        const valoresY = valoresX.map(f);
+        
+        // Raíces de la ecuación (donde f(x) = 0)
+        const raices = [-1.4, 6.4];
+        const valoresRaicesY = [0, 0];
+        
+        // Mostrar tabla
+        const tabla = document.getElementById("tabla-valores");
+        valoresX.forEach(x => {
+            let fila = document.createElement("tr");
+            fila.innerHTML = `<td>${x}</td><td>${f(x).toFixed(2)}</td>`;
+            tabla.appendChild(fila);
+        });
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: valoresX,
+                datasets: [
+                    {
+                        label: 'f(x) = -0.5x² + 2.5x + 4.5',
+                        data: valoresY,
+                        borderColor: 'blue',
+                        fill: false
+                    },
+                    {
+                        label: 'Raíces',
+                        data: valoresRaicesY,
+                        pointBackgroundColor: 'red',
+                        pointBorderColor: 'red',
+                        pointRadius: 5,
+                        showLine: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'x' } },
+                    y: { title: { display: true, text: 'f(x)' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

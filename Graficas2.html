@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficas y Tabulación</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Gráficas de funciones</h2>
+    <canvas id="grafica"></canvas>
+    
+    <h3>Tabulación de f(x) = 2x + 3</h3>
+    <table border="1">
+        <tr>
+            <th>x</th>
+            <th>f(x)</th>
+        </tr>
+        <tbody id="tabla1"></tbody>
+    </table>
+
+    <h3>Tabulación de f(x) = (3/2)x - (2/3)</h3>
+    <table border="1">
+        <tr>
+            <th>x</th>
+            <th>f(x)</th>
+        </tr>
+        <tbody id="tabla2"></tbody>
+    </table>
+
+    <h3>Tabulación de f(x) = -3x² + 2</h3>
+    <table border="1">
+        <tr>
+            <th>x</th>
+            <th>f(x)</th>
+        </tr>
+        <tbody id="tabla3"></tbody>
+    </table>
+
+    <script>
+        function f1(x) {
+            return 2 * x + 3;
+        }
+
+        function f2(x) {
+            return (3/2) * x - (2/3);
+        }
+
+        function f3(x) {
+            return -3 * x * x + 2;
+        }
+
+        const ctx = document.getElementById('grafica').getContext('2d');
+        const valoresX = [-2, -1, 0, 1, 2, 3, 4, 5];
+        const valoresY1 = valoresX.map(f1);
+        const valoresY2 = valoresX.map(f2);
+        const valoresY3 = valoresX.map(f3);
+        
+        // Mostrar tablas
+        const tabla1 = document.getElementById("tabla1");
+        valoresX.forEach(x => {
+            let fila = document.createElement("tr");
+            fila.innerHTML = `<td>${x}</td><td>${f1(x).toFixed(2)}</td>`;
+            tabla1.appendChild(fila);
+        });
+
+        const tabla2 = document.getElementById("tabla2");
+        valoresX.forEach(x => {
+            let fila = document.createElement("tr");
+            fila.innerHTML = `<td>${x}</td><td>${f2(x).toFixed(2)}</td>`;
+            tabla2.appendChild(fila);
+        });
+
+        const tabla3 = document.getElementById("tabla3");
+        valoresX.forEach(x => {
+            let fila = document.createElement("tr");
+            fila.innerHTML = `<td>${x}</td><td>${f3(x).toFixed(2)}</td>`;
+            tabla3.appendChild(fila);
+        });
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: valoresX,
+                datasets: [
+                    {
+                        label: 'f(x) = 2x + 3',
+                        data: valoresY1,
+                        borderColor: 'blue',
+                        fill: false
+                    },
+                    {
+                        label: 'f(x) = (3/2)x - (2/3)',
+                        data: valoresY2,
+                        borderColor: 'green',
+                        fill: false
+                    },
+                    {
+                        label: 'f(x) = -3x² + 2',
+                        data: valoresY3,
+                        borderColor: 'red',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'x' } },
+                    y: { title: { display: true, text: 'f(x)' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

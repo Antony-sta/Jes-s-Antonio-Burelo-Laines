@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de la Secante</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        table {
+            width: 50%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 80%;
+            height: auto;
+            border: 1px solid black;
+        }
+        canvas {
+            margin-top: 20px;
+            max-width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <h2>Método de la Secante</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>i</th>
+                <th>x_i</th>
+                <th>E_a (%)</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-body">
+        </tbody>
+    </table>
+
+    <!-- Imagen de la gráfica del método de la secante -->
+    <img src="grafica.png" alt="Gráfica del método de la secante">
+    
+    <!-- Contenedor para la gráfica generada dinámicamente -->
+    <canvas id="graficaTabulaciones"></canvas>
+
+    <script>
+        // Datos de la tabla
+        const datos = [
+            { i: 0, x: 1, error: "-" },
+            { i: 1, x: 4, error: "-" },
+            { i: 2, x: 1.94, error: "106.19" },
+            { i: 3, x: 2.06, error: "5.83" },
+            { i: 4, x: 2.66, error: "22.56" }
+        ];
+
+        // Seleccionar el cuerpo de la tabla
+        const tablaBody = document.getElementById("tabla-body");
+
+        // Insertar filas en la tabla
+        datos.forEach(dato => {
+            let fila = `<tr>
+                            <td>${dato.i}</td>
+                            <td>${dato.x}</td>
+                            <td>${dato.error}</td>
+                        </tr>`;
+            tablaBody.innerHTML += fila;
+        });
+
+        // Datos de la gráfica de tabulaciones (x, y)
+        const xValores = [-2, -1, 0, 1, 2, 3];
+        const yValores = [-27.2, -17.4, -1.2, 22.2, 29.4];
+
+        // Crear la gráfica con Chart.js
+        const ctx = document.getElementById('graficaTabulaciones').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: xValores,
+                datasets: [{
+                    label: 'f(x)',
+                    data: yValores,
+                    borderColor: 'blue',
+                    backgroundColor: 'lightblue',
+                    fill: false,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'x' } },
+                    y: { title: { display: true, text: 'f(x)' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

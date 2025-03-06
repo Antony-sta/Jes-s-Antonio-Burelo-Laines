@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Bisección</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Método de Bisección</h2>
+    <table id="bisectionTable">
+        <thead>
+            <tr>
+                <th>i</th>
+                <th>x₁</th>
+                <th>x₅</th>
+                <th>xₐ</th>
+                <th>εₐ</th>
+                <th>εₜ%</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <canvas id="chart" width="400" height="200"></canvas>
+    
+    <script>
+        const data = [
+            { i: 1, x1: -2, x5: -1, xa: -1.5, ea: "-", et: "6.7%" },
+            { i: 2, x1: -2, x5: -1.25, xa: -1.25, ea: "22.2%", et: "11.03%" },
+            { i: 3, x1: -1.5, x5: -1.375, xa: -1.375, ea: "9.09%", et: "2.99%" },
+            { i: 4, x1: -1.5, x5: -1.437, xa: -1.437, ea: "4.32%", et: "1.99%" },
+            { i: 5, x1: -1.437, x5: -1.397, xa: -1.397, ea: "2.87%", et: "1.79%" },
+            { i: 6, x1: -1.397, x5: -1.38, xa: -1.38, ea: "1.23%", et: "1.92%" },
+            { i: 7, x1: -1.38, x5: -1.371, xa: -1.371, ea: "0.66%", et: "1.92%" }
+        ];
+
+        function fillTable() {
+            const tbody = document.querySelector("#bisectionTable tbody");
+            data.forEach(row => {
+                let tr = `<tr>
+                    <td>${row.i}</td>
+                    <td>${row.x1}</td>
+                    <td>${row.x5}</td>
+                    <td>${row.xa}</td>
+                    <td>${row.ea}</td>
+                    <td>${row.et}</td>
+                </tr>`;
+                tbody.innerHTML += tr;
+            });
+        }
+
+        function drawChart() {
+            const ctx = document.getElementById('chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(row => row.i),
+                    datasets: [
+                        {
+                            label: 'xₐ (Aproximación)',
+                            data: data.map(row => row.xa),
+                            borderColor: 'blue',
+                            fill: false
+                        },
+                        {
+                            label: 'Error Absoluto',
+                            data: data.map(row => parseFloat(row.ea)),
+                            borderColor: 'red',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Iteración' } },
+                        y: { title: { display: true, text: 'Valor' } }
+                    }
+                }
+            });
+        }
+
+        fillTable();
+        drawChart();
+    </script>
+</body>
+</html>

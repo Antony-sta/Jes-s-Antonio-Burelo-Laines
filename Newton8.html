@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Newton-Raphson</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Gráfica de f(x) = 0.5x² - 3x - 20</h2>
+    <canvas id="graph" width="400" height="400"></canvas>
+
+    <h2>Tabla de Valores</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>x</th>
+                <th>y = f(x)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <h2>Tabla de Iteraciones (Newton-Raphson)</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Iteración (i)</th>
+                <th>xᵢ</th>
+                <th>f(xᵢ)</th>
+                <th>f'(xᵢ)</th>
+                <th>xₛ</th>
+                <th>Error (%)</th>
+            </tr>
+        </thead>
+        <tbody id="newtonTable"></tbody>
+    </table>
+
+    <h2>Operaciones Paso a Paso</h2>
+    <pre id="operations"></pre>
+
+    <script>
+        function f(x) {
+            return 0.5 * Math.pow(x, 2) - 3 * x - 20;
+        }
+
+        function df(x) {
+            return x - 3; // Derivada de f(x) = 0.5x² - 3x - 20 → f'(x) = x - 3
+        }
+
+        function plotGraph() {
+            let ctx = document.getElementById('graph').getContext('2d');
+            let xValues = Array.from({ length: 100 }, (_, i) => -20 + i * 0.5);
+            let yValues = xValues.map(x => f(x));
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [
+                        {
+                            label: 'f(x) = 0.5x² - 3x - 20',
+                            data: yValues,
+                            borderColor: 'blue',
+                            fill: false,
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: { title: { display: true, text: 'x' } },
+                        y: { title: { display: true, text: 'f(x)' } }
+                    }
+                }
+            });
+        }
+
+        function fillTable() {
+            let tableBody = document.getElementById("tableBody");
+            let xValues = [-20, -22.5, -24, -25.5, -22.5, -20, -16.5, -12]; 
+            tableBody.innerHTML = "";
+            xValues.forEach(x => {
+                let y = f(x);
+                let row = `<tr><td>${x}</td><td>${y.toFixed(2)}</td></tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function newtonRaphson(x0, tol, maxIter) {
+            let tableBody = document.getElementById("newtonTable");
+            let operations = document.getElementById("operations");
+            tableBody.innerHTML = "";
+            operations.innerHTML = "";
+            
+            let x = x0;
+            let error = 100;
+            let i = 0;
+
+            while (error > tol && i < maxIter) {
+                let fx = f(x);
+                let dfx = df(x);
+                if (dfx === 0) break; // Evitar división por cero
+                
+                let x_new = x - fx / dfx;
+                error = Math.abs((x_new - x) / x_new) * 100;
+                
+                let row = `<tr>
+                    <td>${i + 1}</td>
+                    <td>${x.toFixed(6)}</td>
+                    <td>${fx.toFixed(6)}</td>
+                    <td>${dfx.toFixed(6)}</td>
+                    <td>${x_new.toFixed(6)}</td>
+                    <td>${error.toFixed(2)}%</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+
+                let operation = `Iteración ${i + 1}:
+    xᵢ = ${x.toFixed(6)}
+    f(xᵢ) = 0.5(${x.toFixed(6)})² - 3(${x.toFixed(6)}) - 20 = ${fx.toFixed(6)}
+    f'(xᵢ) = (${x.toFixed(6)}) - 3 = ${dfx.toFixed(6)}
+    xₛ = xᵢ - f(xᵢ)/f'(xᵢ) = ${x.toFixed(6)} - (${fx.toFixed(6)}) / (${dfx.toFixed(6)}) = ${x_new.toFixed(6)}
+    Error = |(xₛ - xᵢ) / xₛ| * 100 = |(${x_new.toFixed(6)} - ${x.toFixed(6)}) / ${x_new.toFixed(6)}| * 100 = ${error.toFixed(2)}%
+------------------------------------------------------\n`;
+                
+                operations.innerHTML += operation;
+
+                x = x_new;
+                i++;
+            }
+        }
+
+        plotGraph();
+        fillTable();
+        newtonRaphson(3.5, 0.01, 10); // Valor inicial, tolerancia, iteraciones máximas
+    </script>
+</body>
+</html>

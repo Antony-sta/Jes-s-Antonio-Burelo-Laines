@@ -1,0 +1,5 @@
+digraph {
+	A [label=Inicio shape=oval]
+	B [label=Proceso]
+	A -> B
+}

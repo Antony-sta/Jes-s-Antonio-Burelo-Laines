@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Bisección</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Método de Bisección</h2>
+    <table id="bisectionTable">
+        <thead>
+            <tr>
+                <th>i</th>
+                <th>x₁</th>
+                <th>x₂</th>
+                <th>xₘ</th>
+                <th>εₐ%</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <canvas id="chart" width="400" height="200"></canvas>
+    
+    <script>
+        function f(x) {
+            return -125 + 182*x - 90*x**2 + 44*x**3 - 8*x**4 + 0.7*x**5;
+        }
+
+        const data = [
+            { i: 1, x1: 0.5, x2: 1, xm: 0.75, ea: "-" },
+            { i: 2, x1: 0.75, x2: 1, xm: 0.875, ea: "14.28%" },
+            { i: 3, x1: 0.875, x2: 1, xm: 0.937, ea: "6.6%" },
+            { i: 4, x1: 0.937, x2: 1, xm: 0.968, ea: "3.23%" },
+            { i: 5, x1: 0.968, x2: 1, xm: 0.984, ea: "1.59%" },
+            { i: 6, x1: 0.984, x2: 1, xm: 0.992, ea: "0.79%" },
+        ];
+
+        function fillTable() {
+            const tbody = document.querySelector("#bisectionTable tbody");
+            data.forEach(row => {
+                let tr = `<tr>
+                    <td>${row.i}</td>
+                    <td>${row.x1}</td>
+                    <td>${row.x2}</td>
+                    <td>${row.xm}</td>
+                    <td>${row.ea}</td>
+                </tr>`;
+                tbody.innerHTML += tr;
+            });
+        }
+
+        function drawChart() {
+            const ctx = document.getElementById('chart').getContext('2d');
+            
+            let xValues = [];
+            let yValues = [];
+            for (let x = 0; x <= 1.2; x += 0.01) {
+                xValues.push(x);
+                yValues.push(f(x));
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [
+                        {
+                            label: 'f(x)',
+                            data: yValues,
+                            borderColor: 'black',
+                            fill: false
+                        },
+                        {
+                            label: 'Puntos de Bisección',
+                            data: data.map(row => ({x: row.xm, y: f(row.xm)})),
+                            borderColor: 'red',
+                            pointRadius: 5,
+                            pointBackgroundColor: 'red',
+                            type: 'scatter'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'x' } },
+                        y: { title: { display: true, text: 'f(x)' } }
+                    }
+                }
+            });
+        }
+
+        fillTable();
+        drawChart();
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Newton-Raphson</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        canvas {
+            max-width: 600px;
+            margin: auto;
+        }
+        table {
+            width: 60%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Gráfica de la Función</h2>
+    <canvas id="grafica"></canvas>
+
+    <h2>Método de Newton-Raphson (x₀ = 0.5)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Iteración</th>
+                <th>Aproximación (xₙ)</th>
+                <th>Error Absoluto</th>
+            </tr>
+        </thead>
+        <tbody id="tablaIteraciones"></tbody>
+    </table>
+
+    <script>
+        // Definición de la función y su derivada
+        function f(x) {
+            return -1 + 5.5 * x - 4 * Math.pow(x, 2) + 0.5 * Math.pow(x, 3);
+        }
+
+        function f_derivada(x) {
+            return 5.5 - 8 * x + 1.5 * Math.pow(x, 2);
+        }
+
+        // Generar datos para la gráfica en el intervalo [-1, 2]
+        let valoresX = [];
+        let valoresY = [];
+        for (let x = -1; x <= 2; x += 0.05) {
+            valoresX.push(x);
+            valoresY.push(f(x));
+        }
+
+        // Dibujar la gráfica
+        const ctx = document.getElementById('grafica').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: valoresX,
+                datasets: [{
+                    label: 'F(x) = -1 + 5.5x - 4x² + 0.5x³',
+                    data: valoresY,
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'x' } },
+                    y: { title: { display: true, text: 'F(x)' } }
+                }
+            }
+        });
+
+        // Método de Newton-Raphson con x₀ = 0.5
+        function newtonRaphson(x0 = 0.5, tol = 0.01, maxIter = 10) {
+            let iteraciones = [];
+            let x = x0;
+            let error = 100;
+            let iter = 0;
+            let xAnterior;
+
+            while (error > tol && iter < maxIter) {
+                let fx = f(x);
+                let fpx = f_derivada(x);
+
+                if (fpx === 0) {
+                    console.error("Derivada es cero. No se puede continuar.");
+                    break;
+                }
+
+                xAnterior = x;
+                x = x - fx / fpx;
+                error = Math.abs(x - xAnterior); // Error absoluto
+
+                iteraciones.push({ iter, x, error });
+                iter++;
+            }
+
+            return iteraciones;
+        }
+
+        // Ejecutar el método con x0 = 0.5
+        let resultados = newtonRaphson(0.5);
+
+        // Mostrar resultados en la tabla
+        let tabla = document.getElementById("tablaIteraciones");
+        resultados.forEach(({ iter, x, error }) => {
+            let fila = `<tr>
+                <td>${iter + 1}</td>
+                <td>${x.toFixed(5)}</td>
+                <td>${error.toFixed(5)}</td>
+            </tr>`;
+            tabla.innerHTML += fila;
+        });
+    </script>
+
+</body>
+</html>

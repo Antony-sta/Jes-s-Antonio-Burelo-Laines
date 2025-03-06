@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Falsa Posición</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Método de Falsa Posición</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Iteración</th>
+                <th>Xi</th>
+                <th>Xu</th>
+                <th>Xr</th>
+                <th>Error (%)</th>
+            </tr>
+        </thead>
+        <tbody id="tabla">
+            <tr>
+                <td>1</td>
+                <td>-2</td>
+                <td>0</td>
+                <td>0.416</td>
+                <td>-8.67</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>-2</td>
+                <td>-17.65</td>
+                <td>-0.2958</td>
+                <td>40.24%</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>-2</td>
+                <td>-2958</td>
+                <td>-0.3636</td>
+                <td>18.63%</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>-2</td>
+                <td>-0.3636</td>
+                <td>-0.3982</td>
+                <td>8.69%</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>-2</td>
+                <td>-3982</td>
+                <td>-0.416</td>
+                <td>3.98%</td>
+            </tr>
+        </tbody>
+    </table>
+    <canvas id="grafica"></canvas>
+
+    <script>
+        function f(x) {
+            return -12 - 21*x + 18*x**2 - 2.75*x**3;
+        }
+        
+        function falsaPosicion(xi, xu, tol, maxIter) {
+            // ... (código de la función falsaPosicion original) ...
+        }
+        
+        function generarTabla() {
+            // No necesitamos calcular iteraciones aquí, ya que los valores están dados en la foto
+        }
+        
+        function graficarFuncion() {
+            let ctx = document.getElementById('grafica').getContext('2d');
+            let datosX = [];
+            let datosY = [];
+            
+            for (let x = -3; x <= 3; x += 0.1) {
+                datosX.push(x);
+                datosY.push(f(x));
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: datosX,
+                    datasets: [{
+                        label: 'f(x) = -12 - 21x + 18x^2 - 2.75x^3',
+                        data: datosY,
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'x' } },
+                        y: { title: { display: true, text: 'f(x)' } }
+                    }
+                }
+            });
+        }
+        
+        generarTabla();
+        graficarFuncion();
+    </script>
+</body>
+</html>
