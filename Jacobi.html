@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Jacobi</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table { margin: auto; border-collapse: collapse; }
+        td, th { border: 1px solid black; padding: 5px; }
+        input { width: 60px; }
+    </style>
+</head>
+<body>
+    <h2>Resolver sistema de ecuaciones con el Método de Jacobi</h2>
+    <label for="n">Número de ecuaciones: </label>
+    <input type="number" id="n" min="2" value="3">
+    <button onclick="generarTabla()">Generar</button>
+    <div id="tabla"></div>
+    <button onclick="resolverJacobi()">Resolver</button>
+    <h3>Resultado:</h3>
+    <div id="resultado"></div>
+    
+    <script>
+        function generarTabla() {
+            let n = document.getElementById("n").value;
+            let tablaHTML = "<table>";
+            for (let i = 0; i < n; i++) {
+                tablaHTML += "<tr>";
+                for (let j = 0; j < n; j++) {
+                    tablaHTML += `<td><input type='number' id='a${i}${j}'></td>`;
+                }
+                tablaHTML += `<td>| <input type='number' id='b${i}'></td>`;
+                tablaHTML += "</tr>";
+            }
+            tablaHTML += "</table>";
+            document.getElementById("tabla").innerHTML = tablaHTML;
+        }
+
+        function resolverJacobi() {
+            let n = parseInt(document.getElementById("n").value);
+            let A = [], b = [], x = new Array(n).fill(1), xNuevo = new Array(n).fill(0);
+            for (let i = 0; i < n; i++) {
+                A[i] = [];
+                for (let j = 0; j < n; j++) {
+                    A[i][j] = parseFloat(document.getElementById(`a${i}${j}`).value) || 0;
+                }
+                b[i] = parseFloat(document.getElementById(`b${i}`).value) || 0;
+            }
+
+            // Verificar si la diagonal principal contiene ceros o valores demasiado pequeños
+            for (let i = 0; i < n; i++) {
+                if (Math.abs(A[i][i]) < 1e-10) {
+                    document.getElementById("resultado").innerHTML = "<p style='color:red;'>Error: La diagonal principal contiene ceros o valores muy pequeños.</p>";
+                    return;
+                }
+            }
+
+            let iteraciones = 50, tol = 1e-6, iter = 0, error;
+            let historial = "<table><tr><th>Iteración</th>";
+            for (let i = 0; i < n; i++) {
+                historial += `<th>X${i+1}</th>`;
+            }
+            historial += "</tr>";
+
+            do {
+                error = 0;
+                let iteracionActual = `<tr><td>${iter + 1}</td>`;
+                for (let i = 0; i < n; i++) {
+                    let suma = 0;
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) suma += A[i][j] * x[j];
+                    }
+                    let nuevoValor = (b[i] - suma) / A[i][i];
+                    error = Math.max(error, Math.abs(nuevoValor - x[i]));
+                    xNuevo[i] = nuevoValor;
+                    iteracionActual += `<td>${nuevoValor.toFixed(6)}</td>`;
+                }
+                x = [...xNuevo];
+                historial += iteracionActual + "</tr>";
+                iter++;
+            } while (error > tol && iter < iteraciones);
+            
+            historial += "</table>";
+            document.getElementById("resultado").innerHTML = historial + `<p>Solución final: [${x.map(v => v.toFixed(6)).join(", ")}] 
+                en ${iter} iteraciones</p>`;
+        }
+    </script>
+</body>
+</html>

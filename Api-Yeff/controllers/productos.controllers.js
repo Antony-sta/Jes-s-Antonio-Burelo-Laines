@@ -1,5 +1,22 @@
-async function createProducto(red,res) {
-    res.status(200).sent()
+const producto = require(.../models/productos.models.js)
+
+async function createProducto(req,res) {
+ const producto =new producto (req.body);
+ //console.log (producto)
+
+ try {
+ if(req.files.imagep){
+    const imagepath=Imagen.getFilepath(req,file)
+    producto
+
+ }
+ }
+ /*try {
+    const datos= await producto.save();
+    res.status(200).send()
+ } catch (error) {
+    res.status(500).sent({msg:"error al guardar los datos"})
+ } */
 
 }
 async function delProductos(red,res){
@@ -23,6 +40,6 @@ async function updateProductos(req,res){
 module.exports={
     createProducto,
     getProductos,
-    delProducto,
+    delProductos,
     updateProductos
 }
